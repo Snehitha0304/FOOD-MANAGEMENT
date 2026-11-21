@@ -1,0 +1,365 @@
+### Food Delivery Order Management System - API Requests (.http)
+@baseUrl = http://127.0.0.1:8000
+
+### 1. Health Check
+GET {{baseUrl}}/health
+Accept: application/json
+
+### ==============================================================================
+### AUTHENTICATION MODULE
+### ==============================================================================
+
+### 2. Register Customer (User Story 1)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "test_customer@example.com",
+  "password": "Password@123",
+  "full_name": "Test Customer",
+  "phone": "+919876543210"
+}
+
+### 3. Login as Admin (User Story 4)
+# @name loginAdmin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@fooddelivery.com",
+  "password": "Admin@123"
+}
+
+@adminToken = {{loginAdmin.response.body.access_token}}
+
+### 4. Login as Restaurant Owner 1
+# @name loginOwner1
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "owner1@fooddelivery.com",
+  "password": "Owner@123"
+}
+
+@owner1Token = {{loginOwner1.response.body.access_token}}
+
+### 5. Login as Delivery Agent 1
+# @name loginAgent1
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "agent1@fooddelivery.com",
+  "password": "Agent@123"
+}
+
+@agent1Token = {{loginAgent1.response.body.access_token}}
+
+### 6. Login as Customer 1
+# @name loginCustomer1
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "customer1@fooddelivery.com",
+  "password": "Customer@123"
+}
+
+@customer1Token = {{loginCustomer1.response.body.access_token}}
+
+### 7. Admin Onboard Restaurant Owner (User Story 2)
+POST {{baseUrl}}/auth/admin/users
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "email": "owner3@fooddelivery.com",
+  "password": "Owner@123",
+  "full_name": "Owner Three",
+  "phone": "+919876543290",
+  "role": "RESTAURANT_OWNER"
+}
+
+### 8. Admin Onboard Delivery Agent (User Story 3)
+POST {{baseUrl}}/auth/admin/users
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "email": "agent3@fooddelivery.com",
+  "password": "Agent@123",
+  "full_name": "Agent Three",
+  "phone": "+919876543291",
+  "role": "DELIVERY_AGENT"
+}
+
+### ==============================================================================
+### RESTAURANT & MENU MODULES
+### ==============================================================================
+
+### 9. Restaurant Owner View Profile
+GET {{baseUrl}}/restaurants/me
+Authorization: Bearer {{owner1Token}}
+
+### 10. Restaurant Owner Update Profile (User Story 5)
+PUT {{baseUrl}}/restaurants/me
+Authorization: Bearer {{owner1Token}}
+Content-Type: application/json
+
+{
+  "name": "Spice Junction Grand",
+  "cuisine": "North Indian Fine Dining"
+}
+
+### 11. Restaurant Owner Toggle Open Status (User Story 6)
+PATCH {{baseUrl}}/restaurants/me/open-status
+Authorization: Bearer {{owner1Token}}
+Content-Type: application/json
+
+{
+  "is_open": true
+}
+
+### 12. Search Restaurants with Filters & Pagination (User Story 10)
+GET {{baseUrl}}/restaurants?city=Bengaluru&cuisine=Indian&page=1&size=10
+
+### 13. View Restaurant Menu Grouped by Category (User Story 11)
+GET {{baseUrl}}/restaurants/1/menu
+
+### 14. Create Menu Category (User Story 7)
+# @name createCategory
+POST {{baseUrl}}/restaurants/me/menu-categories
+Authorization: Bearer {{owner1Token}}
+Content-Type: application/json
+
+{
+  "name": "Chef Specials",
+  "display_order": 4
+}
+
+@newCatId = {{createCategory.response.body.id}}
+
+### 15. List Menu Categories
+GET {{baseUrl}}/restaurants/me/menu-categories
+Authorization: Bearer {{owner1Token}}
+
+### 16. Update Menu Category
+PUT {{baseUrl}}/restaurants/me/menu-categories/{{newCatId}}
+Authorization: Bearer {{owner1Token}}
+Content-Type: application/json
+
+{
+  "name": "Chef Master Specials"
+}
+
+### 17. Add Menu Item (User Story 8)
+# @name createItem
+POST {{baseUrl}}/restaurants/me/menu-items
+Authorization: Bearer {{owner1Token}}
+Content-Type: application/json
+
+{
+  "category_id": 1,
+  "name": "Mutton Seekh Kebab",
+  "description": "Succulent minced lamb grilled on skewers",
+  "price": 380.00,
+  "is_veg": false,
+  "is_available": true
+}
+
+@newItemId = {{createItem.response.body.id}}
+
+### 18. Update Menu Item
+PUT {{baseUrl}}/menu-items/{{newItemId}}
+Authorization: Bearer {{owner1Token}}
+Content-Type: application/json
+
+{
+  "price": 395.00
+}
+
+### 19. Toggle Item Availability (User Story 9)
+PATCH {{baseUrl}}/menu-items/{{newItemId}}/availability
+Authorization: Bearer {{owner1Token}}
+Content-Type: application/json
+
+{
+  "is_available": true
+}
+
+### 20. Soft-Delete Menu Item
+DELETE {{baseUrl}}/menu-items/{{newItemId}}
+Authorization: Bearer {{owner1Token}}
+
+### ==============================================================================
+### CUSTOMER MODULE
+### ==============================================================================
+
+### 21. Get Customer Profile (User Story 13)
+GET {{baseUrl}}/customer/profile
+Authorization: Bearer {{customer1Token}}
+
+### 22. Update Customer Profile
+PUT {{baseUrl}}/customer/profile
+Authorization: Bearer {{customer1Token}}
+Content-Type: application/json
+
+{
+  "full_name": "Aarav V. Sharma"
+}
+
+### 23. List Customer Addresses (User Story 12)
+GET {{baseUrl}}/addresses
+Authorization: Bearer {{customer1Token}}
+
+### 24. Create Address
+# @name createAddress
+POST {{baseUrl}}/addresses
+Authorization: Bearer {{customer1Token}}
+Content-Type: application/json
+
+{
+  "line1": "Flat 304, Palm View",
+  "line2": "HSR Sector 2",
+  "city": "Bengaluru",
+  "pincode": "560102",
+  "is_default": true
+}
+
+@addressId = {{createAddress.response.body.id}}
+
+### 25. Set Default Address
+PUT {{baseUrl}}/addresses/{{addressId}}/default
+Authorization: Bearer {{customer1Token}}
+
+### ==============================================================================
+### ORDER MODULE & STATE MACHINE
+### ==============================================================================
+
+### 26. Place Order (User Story 14 & 15)
+# @name placeOrder
+POST {{baseUrl}}/orders
+Authorization: Bearer {{customer1Token}}
+Content-Type: application/json
+
+{
+  "restaurant_id": 1,
+  "address_id": 1,
+  "items": [
+    { "menu_item_id": 1, "quantity": 1 },
+    { "menu_item_id": 3, "quantity": 2 }
+  ]
+}
+
+@orderId = {{placeOrder.response.body.id}}
+
+### 27. View Customer Order History (User Story 17)
+GET {{baseUrl}}/orders/me?page=1&size=10
+Authorization: Bearer {{customer1Token}}
+
+### 28. View Order Detail (Participant Only)
+GET {{baseUrl}}/orders/{{orderId}}
+Authorization: Bearer {{customer1Token}}
+
+### 29. Restaurant Owner View Incoming Orders (User Story 18)
+GET {{baseUrl}}/orders/restaurant?status=PLACED
+Authorization: Bearer {{owner1Token}}
+
+### 30. Restaurant Owner Accept Order (CONFIRMED)
+PATCH {{baseUrl}}/orders/{{orderId}}/status
+Authorization: Bearer {{owner1Token}}
+Content-Type: application/json
+
+{
+  "status": "CONFIRMED",
+  "remark": "Kitchen accepted the order"
+}
+
+### 31. Restaurant Owner Mark Order PREPARING (User Story 19)
+PATCH {{baseUrl}}/orders/{{orderId}}/status
+Authorization: Bearer {{owner1Token}}
+Content-Type: application/json
+
+{
+  "status": "PREPARING",
+  "remark": "Chef started cooking"
+}
+
+### 32. Restaurant Owner Mark Order READY_FOR_PICKUP
+PATCH {{baseUrl}}/orders/{{orderId}}/status
+Authorization: Bearer {{owner1Token}}
+Content-Type: application/json
+
+{
+  "status": "READY_FOR_PICKUP",
+  "remark": "Packed and kept at counter"
+}
+
+### ==============================================================================
+### DELIVERY MODULE
+### ==============================================================================
+
+### 33. Admin Assign Delivery Agent (User Story 20)
+PATCH {{baseUrl}}/orders/{{orderId}}/assign-agent
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "agent_id": 4
+}
+
+### 34. Delivery Agent View Assigned Orders (User Story 21)
+GET {{baseUrl}}/orders/agent
+Authorization: Bearer {{agent1Token}}
+
+### 35. Delivery Agent Mark PICKED_UP (User Story 22)
+PATCH {{baseUrl}}/orders/{{orderId}}/delivery-status
+Authorization: Bearer {{agent1Token}}
+Content-Type: application/json
+
+{
+  "status": "PICKED_UP",
+  "remark": "Picked up from restaurant"
+}
+
+### 36. Delivery Agent Mark DELIVERED
+PATCH {{baseUrl}}/orders/{{orderId}}/delivery-status
+Authorization: Bearer {{agent1Token}}
+Content-Type: application/json
+
+{
+  "status": "DELIVERED",
+  "remark": "Delivered to customer"
+}
+
+### ==============================================================================
+### RATING & REPORTING MODULES
+### ==============================================================================
+
+### 37. Customer Rate Delivered Order (User Story 23 & 24)
+POST {{baseUrl}}/orders/{{orderId}}/rating
+Authorization: Bearer {{customer1Token}}
+Content-Type: application/json
+
+{
+  "restaurant_rating": 5,
+  "agent_rating": 5,
+  "comment": "Food was hot and delivery was super fast!"
+}
+
+### 38. Restaurant Sales Report (Owner)
+GET {{baseUrl}}/reports/restaurant-sales
+Authorization: Bearer {{owner1Token}}
+
+### 39. Restaurant Sales Report (Admin)
+GET {{baseUrl}}/reports/restaurant-sales?restaurant_id=1
+Authorization: Bearer {{adminToken}}
+
+### 40. Delivery Agent Performance Report (Admin)
+GET {{baseUrl}}/reports/agent-performance
+Authorization: Bearer {{adminToken}}
+
+### 41. Cancellation Rate Analytics Report (Admin)
+GET {{baseUrl}}/reports/cancellation-rate
+Authorization: Bearer {{adminToken}}

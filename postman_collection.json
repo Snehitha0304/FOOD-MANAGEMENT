@@ -1,0 +1,391 @@
+{
+  "info": {
+    "name": "Food Delivery Order Management System API",
+    "_postman_id": "4b63889c-4977-4b71-9f93-c98f828a1234",
+    "description": "Complete Postman collection for Food Delivery Order Management System (Case Study 04).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://127.0.0.1:8000", "type": "string" },
+    { "key": "adminToken", "value": "", "type": "string" },
+    { "key": "ownerToken", "value": "", "type": "string" },
+    { "key": "customerToken", "value": "", "type": "string" },
+    { "key": "agentToken", "value": "", "type": "string" },
+    { "key": "orderId", "value": "1", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/health", "host": ["{{baseUrl}}"], "path": ["health"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register Customer",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer_demo@example.com\",\n  \"password\": \"Customer@123\",\n  \"full_name\": \"Demo Customer\",\n  \"phone\": \"+919876543210\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] }
+          }
+        },
+        {
+          "name": "Login (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["var jsonData = pm.response.json(); pm.collectionVariables.set('adminToken', jsonData.access_token);"]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@fooddelivery.com\",\n  \"password\": \"Admin@123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Login (Restaurant Owner)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["var jsonData = pm.response.json(); pm.collectionVariables.set('ownerToken', jsonData.access_token);"]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"owner1@fooddelivery.com\",\n  \"password\": \"Owner@123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Login (Customer)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["var jsonData = pm.response.json(); pm.collectionVariables.set('customerToken', jsonData.access_token);"]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer1@fooddelivery.com\",\n  \"password\": \"Customer@123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Login (Delivery Agent)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["var jsonData = pm.response.json(); pm.collectionVariables.set('agentToken', jsonData.access_token);"]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"agent1@fooddelivery.com\",\n  \"password\": \"Agent@123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Admin Onboard Owner/Agent",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"new_owner@test.com\",\n  \"password\": \"Owner@123\",\n  \"full_name\": \"New Owner\",\n  \"phone\": \"+919876543290\",\n  \"role\": \"RESTAURANT_OWNER\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/admin/users", "host": ["{{baseUrl}}"], "path": ["auth", "admin", "users"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Restaurants",
+      "item": [
+        {
+          "name": "Search Restaurants",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/restaurants?city=Bengaluru&cuisine=Indian&page=1&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["restaurants"],
+              "query": [
+                { "key": "city", "value": "Bengaluru" },
+                { "key": "cuisine", "value": "Indian" },
+                { "key": "page", "value": "1" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Restaurant By ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/restaurants/1", "host": ["{{baseUrl}}"], "path": ["restaurants", "1"] }
+          }
+        },
+        {
+          "name": "Get Restaurant Menu",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/restaurants/1/menu", "host": ["{{baseUrl}}"], "path": ["restaurants", "1", "menu"] }
+          }
+        },
+        {
+          "name": "Get My Restaurant (Owner)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{ownerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/restaurants/me", "host": ["{{baseUrl}}"], "path": ["restaurants", "me"] }
+          }
+        },
+        {
+          "name": "Update Restaurant Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ownerToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Spice Junction Grand\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/restaurants/me", "host": ["{{baseUrl}}"], "path": ["restaurants", "me"] }
+          }
+        },
+        {
+          "name": "Toggle Open Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ownerToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_open\": true\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/restaurants/me/open-status", "host": ["{{baseUrl}}"], "path": ["restaurants", "me", "open-status"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Menu Management",
+      "item": [
+        {
+          "name": "Create Menu Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ownerToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Chef Special Combos\",\n  \"display_order\": 4\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/restaurants/me/menu-categories", "host": ["{{baseUrl}}"], "path": ["restaurants", "me", "menu-categories"] }
+          }
+        },
+        {
+          "name": "Create Menu Item",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ownerToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category_id\": 1,\n  \"name\": \"Crispy Baby Corn\",\n  \"price\": 180.00,\n  \"is_veg\": true,\n  \"is_available\": true\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/restaurants/me/menu-items", "host": ["{{baseUrl}}"], "path": ["restaurants", "me", "menu-items"] }
+          }
+        },
+        {
+          "name": "Toggle Item Availability",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ownerToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_available\": true\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/menu-items/1/availability", "host": ["{{baseUrl}}"], "path": ["menu-items", "1", "availability"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orders & State Machine",
+      "item": [
+        {
+          "name": "Place Order (Customer)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"restaurant_id\": 1,\n  \"address_id\": 1,\n  \"items\": [\n    { \"menu_item_id\": 1, \"quantity\": 1 },\n    { \"menu_item_id\": 3, \"quantity\": 2 }\n  ]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/orders", "host": ["{{baseUrl}}"], "path": ["orders"] }
+          }
+        },
+        {
+          "name": "Get My Orders (Customer)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/orders/me?page=1&size=10", "host": ["{{baseUrl}}"], "path": ["orders", "me"] }
+          }
+        },
+        {
+          "name": "Get Order Detail (Participant Only)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/orders/{{orderId}}", "host": ["{{baseUrl}}"], "path": ["orders", "{{orderId}}"] }
+          }
+        },
+        {
+          "name": "Owner Update Status (CONFIRMED / PREPARING / READY)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ownerToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"CONFIRMED\",\n  \"remark\": \"Order confirmed by restaurant\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/orders/{{orderId}}/status", "host": ["{{baseUrl}}"], "path": ["orders", "{{orderId}}", "status"] }
+          }
+        },
+        {
+          "name": "Admin Assign Agent",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"agent_id\": 4\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/orders/{{orderId}}/assign-agent", "host": ["{{baseUrl}}"], "path": ["orders", "{{orderId}}", "assign-agent"] }
+          }
+        },
+        {
+          "name": "Agent Delivery Status (PICKED_UP / DELIVERED)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{agentToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"PICKED_UP\",\n  \"remark\": \"Order picked up by agent\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/orders/{{orderId}}/delivery-status", "host": ["{{baseUrl}}"], "path": ["orders", "{{orderId}}", "delivery-status"] }
+          }
+        },
+        {
+          "name": "Customer Rate Delivered Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"restaurant_rating\": 5,\n  \"agent_rating\": 5,\n  \"comment\": \"Outstanding service!\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/orders/{{orderId}}/rating", "host": ["{{baseUrl}}"], "path": ["orders", "{{orderId}}", "rating"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reports",
+      "item": [
+        {
+          "name": "Restaurant Sales Report",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{ownerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/reports/restaurant-sales", "host": ["{{baseUrl}}"], "path": ["reports", "restaurant-sales"] }
+          }
+        },
+        {
+          "name": "Agent Performance Report",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/reports/agent-performance", "host": ["{{baseUrl}}"], "path": ["reports", "agent-performance"] }
+          }
+        },
+        {
+          "name": "Platform Cancellation Rate",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/reports/cancellation-rate", "host": ["{{baseUrl}}"], "path": ["reports", "cancellation-rate"] }
+          }
+        }
+      ]
+    }
+  ]
+}
