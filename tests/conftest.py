@@ -1,3 +1,4 @@
+import functools
 import pytest
 from datetime import time
 from decimal import Decimal
@@ -15,6 +16,10 @@ from app.models.menu_categories import MenuCategory
 from app.models.menu_items import MenuItem
 from app.models.addresses import Address
 from app.main import app
+
+@functools.lru_cache(maxsize=32)
+def get_cached_password_hash(pwd: str) -> str:
+    return get_password_hash(pwd)
 
 # In-memory SQLite database for high-speed, isolated unit tests
 SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
@@ -64,7 +69,7 @@ def seed_data(db_session):
     # Admin
     admin = User(
         email="admin@test.com",
-        password_hash=get_password_hash("Admin@123"),
+        password_hash=get_cached_password_hash("Admin@123"),
         full_name="Admin User",
         phone="+919999999990",
         role=UserRole.ADMIN,
@@ -73,7 +78,7 @@ def seed_data(db_session):
     # Owner 1
     owner1 = User(
         email="owner1@test.com",
-        password_hash=get_password_hash("Owner@123"),
+        password_hash=get_cached_password_hash("Owner@123"),
         full_name="Owner One",
         phone="+919999999991",
         role=UserRole.RESTAURANT_OWNER,
@@ -82,7 +87,7 @@ def seed_data(db_session):
     # Owner 2
     owner2 = User(
         email="owner2@test.com",
-        password_hash=get_password_hash("Owner@123"),
+        password_hash=get_cached_password_hash("Owner@123"),
         full_name="Owner Two",
         phone="+919999999992",
         role=UserRole.RESTAURANT_OWNER,
@@ -91,7 +96,7 @@ def seed_data(db_session):
     # Agent 1
     agent1 = User(
         email="agent1@test.com",
-        password_hash=get_password_hash("Agent@123"),
+        password_hash=get_cached_password_hash("Agent@123"),
         full_name="Agent One",
         phone="+919999999993",
         role=UserRole.DELIVERY_AGENT,
@@ -100,7 +105,7 @@ def seed_data(db_session):
     # Customer 1
     customer1 = User(
         email="customer1@test.com",
-        password_hash=get_password_hash("Customer@123"),
+        password_hash=get_cached_password_hash("Customer@123"),
         full_name="Customer One",
         phone="+919999999994",
         role=UserRole.CUSTOMER,
@@ -109,7 +114,7 @@ def seed_data(db_session):
     # Customer 2
     customer2 = User(
         email="customer2@test.com",
-        password_hash=get_password_hash("Customer@123"),
+        password_hash=get_cached_password_hash("Customer@123"),
         full_name="Customer Two",
         phone="+919999999995",
         role=UserRole.CUSTOMER,

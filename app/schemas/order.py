@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional, List
 from decimal import Decimal
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from app.core.constants import OrderStatus
 
 
@@ -39,8 +39,7 @@ class OrderItemResponse(BaseModel):
     quantity: int
     line_total: Decimal
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class OrderStatusHistoryResponse(BaseModel):
@@ -52,8 +51,7 @@ class OrderStatusHistoryResponse(BaseModel):
     changed_at: datetime
     remark: Optional[str]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class OrderResponse(BaseModel):
@@ -73,8 +71,7 @@ class OrderResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class OrderDetailResponse(OrderResponse):

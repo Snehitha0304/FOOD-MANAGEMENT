@@ -63,7 +63,7 @@ app/
 ### 1. Environment Setup
 ```bash
 # Clone and enter directory
-cd FOOD_DELIVERY_COMPLETE_STRUCTURE
+cd food_delivery_order_management_system
 
 # Create virtual environment (optional if using global Python 3.11+)
 python -m venv .venv

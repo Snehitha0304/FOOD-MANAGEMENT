@@ -1,7 +1,7 @@
 from datetime import datetime, time
 from typing import Optional
 from decimal import Decimal
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class RestaurantBase(BaseModel):
@@ -39,5 +39,4 @@ class RestaurantResponse(RestaurantBase):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
