@@ -1,3 +1,1 @@
-from app.core.database import Base
-
-__all__ = ["Base"]
+from app.db.session import Base

@@ -1,5 +1,5 @@
 import logging
-from typing import Optional, Union
+from typing import Optional
 from fastapi import APIRouter, Depends, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -36,16 +36,16 @@ def register_customer(
 def login(
     request: Request,
     data: Optional[UserLogin] = None,
-    form_data: Optional[OAuth2PasswordRequestForm] = Depends(lambda: None),
+    form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
 ):
-    # Support both JSON request body and Swagger OAuth2PasswordRequestForm
-    if data:
-        email = data.email
-        password = data.password
-    elif form_data:
+    # Support both JSON request body and Swagger OAuth2 password form.
+    if form_data and form_data.username:
         email = form_data.username
         password = form_data.password
+    elif data:
+        email = data.email
+        password = data.password
     else:
         from app.core.exceptions import BadRequestException
         raise BadRequestException("Missing login credentials", code="CREDENTIALS_MISSING")
