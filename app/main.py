@@ -105,17 +105,6 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
 # Include Routers
 from app.routers import auth, restaurant, menu, customer, order, delivery, rating, report, health
 
-# Top-level direct routes as required by API surface
-app.include_router(health.router)
-app.include_router(auth.router)
-app.include_router(delivery.router)
-app.include_router(restaurant.router)
-app.include_router(menu.router)
-app.include_router(customer.router)
-app.include_router(order.router)
-app.include_router(rating.router)
-app.include_router(report.router)
-
 # Also mount under API_V1_STR for versioned clients (/api/v1/...)
 app.include_router(health.router, prefix=settings.API_V1_STR)
 app.include_router(auth.router, prefix=settings.API_V1_STR)
