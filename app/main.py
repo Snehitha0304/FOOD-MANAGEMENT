@@ -115,4 +115,3 @@ app.include_router(customer.router)
 app.include_router(order.router)
 app.include_router(rating.router)
 app.include_router(report.router)
-
